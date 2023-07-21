@@ -93,6 +93,9 @@ inline int _run_before_main_log = []() {
 	return 0;
 }();
 
+#define daassert(expr) \
+	(void)(!!(expr) || (log_error("Assert \"{}\" failed!", #expr), true))
+
 DA_END_SCRIPT
 
 #endif // _DA_SCRIPT_LOG_HPP_
