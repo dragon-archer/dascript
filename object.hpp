@@ -47,33 +47,38 @@ enum class types {
 	error  = 0,
 	object = 1,
 
-	number   = 1 << 1 | object,
-	scope    = 1 << 2 | object,
-	compound = 1 << 3 | object,
-	trigger  = 1 << 4 | object,
-	effect   = 1 << 5 | object,
+	// Modifiers
+	constant = 1 << 1 | object,
+	compound = 1 << 2 | object,
 
-	constant_number = 1 << 6 | number,
-	math_number     = 1 << 6 | number,
+	// Basic types
+	number  = 1 << 3 | object,
+	scope   = 1 << 4 | object,
+	trigger = 1 << 5 | object,
+	effect  = 1 << 6 | object,
 
-	compound_trigger = 1 << 7 | compound | trigger,
-	compound_effect  = 1 << 7 | compound | effect,
+	// Compound types
+	constant_number  = constant | number,
+	compound_number  = compound | number,
+	compound_trigger = compound | trigger,
+	compound_effect  = compound | effect,
 };
 DA_DEFINE_ENUM_OPS(types, constexpr);
 
-inline static std::unordered_map<types, std::string_view> types_name = {
+inline std::unordered_map<types, std::string_view> types_name = {
 	{types::error, "error type"},
 	{types::object, "object"},
 
+	{types::constant, "constant"},
+	{types::compound, "compound"},
+
 	{types::number, "number"},
 	{types::scope, "scope"},
-	{types::compound, "compound"},
 	{types::trigger, "trigger"},
 	{types::effect, "effect"},
 
 	{types::constant_number, "constant_number"},
-	{types::math_number, "math_number"},
-
+	{types::compound_number, "compound_number"},
 	{types::compound_trigger, "compound_trigger"},
 	{types::compound_effect, "compound_effect"},
 };
