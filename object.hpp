@@ -105,6 +105,14 @@ class object {
 	virtual constexpr types type() const noexcept {
 		return types::object;
 	}
+
+	virtual constexpr bool is_constant() noexcept {
+		return false;
+	}
+
+	virtual constexpr bool is_constant() const noexcept {
+		return true;
+	}
 };
 
 DA_END_SCRIPT
