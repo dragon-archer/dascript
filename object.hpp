@@ -49,18 +49,21 @@ enum class types {
 
 	// Modifiers
 	constant = 1 << 1 | object,
-	compound = 1 << 2 | object,
+	native   = 1 << 2 | object,
+	compound = 1 << 3 | object,
 
-	// Basic types
-	number  = 1 << 3 | object,
-	scope   = 1 << 4 | object,
-	trigger = 1 << 5 | object,
-	effect  = 1 << 6 | object,
+	// Abstract types
+	number  = 1 << 4 | object,
+	scope   = 1 << 5 | object,
+	trigger = 1 << 6 | object,
+	effect  = 1 << 7 | object,
 
-	// Compound types
+	// Actual types
 	constant_number  = constant | number,
 	compound_number  = compound | number,
+	native_trigger   = native | trigger,
 	compound_trigger = compound | trigger,
+	native_effect    = native | effect,
 	compound_effect  = compound | effect,
 };
 DA_DEFINE_ENUM_OPS(types, constexpr);
@@ -70,6 +73,7 @@ inline std::unordered_map<types, std::string_view> types_name = {
 	{types::object, "object"},
 
 	{types::constant, "constant"},
+	{types::native, "native"},
 	{types::compound, "compound"},
 
 	{types::number, "number"},
@@ -79,7 +83,9 @@ inline std::unordered_map<types, std::string_view> types_name = {
 
 	{types::constant_number, "constant_number"},
 	{types::compound_number, "compound_number"},
+	{types::native_trigger, "native_trigger"},
 	{types::compound_trigger, "compound_trigger"},
+	{types::native_effect, "native_effect"},
 	{types::compound_effect, "compound_effect"},
 };
 
