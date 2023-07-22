@@ -44,8 +44,8 @@ DA_BEGIN_SCRIPT
 */
 
 enum class types {
-	error  = 0,
-	object = 1,
+	error_type = 0,
+	object     = 1,
 
 	// Modifiers
 	constant = 1 << 1 | object,
@@ -69,7 +69,7 @@ enum class types {
 DA_DEFINE_ENUM_OPS(types, constexpr);
 
 inline std::unordered_map<types, std::string_view> types_name = {
-	{types::error, "error type"},
+	{types::error_type, "error_type"},
 	{types::object, "object"},
 
 	{types::constant, "constant"},
@@ -114,6 +114,14 @@ class object {
 		return true;
 	}
 };
+
+using object_ref      = std::shared_ptr<object>;
+using weak_object_ref = std::weak_ptr<object>;
+
+template<typename T, typename... Args>
+inline object_ref create_object(Args&&... args) {
+	return std::make_shared<T>(std::forward<Args>(args)...);
+}
 
 DA_END_SCRIPT
 
