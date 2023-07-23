@@ -19,8 +19,10 @@
 #include <spdlog/spdlog.h>
 #include <cstring>
 #include <memory>
+#include <random>
 #include <source_location>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 #endif // _DA_SCRIPT_PCH_HPP_

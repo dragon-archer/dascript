@@ -53,18 +53,17 @@ enum class types {
 	compound = 1 << 3 | object,
 
 	// Abstract types
-	number  = 1 << 4 | object,
-	scope   = 1 << 5 | object,
-	trigger = 1 << 6 | object,
-	effect  = 1 << 7 | object,
+	number    = 1 << 4 | object,
+	scope     = 1 << 5 | object,
+	statement = 1 << 6 | object,
+	function  = 1 << 7 | object,
+	property  = 1 << 8 | object,
 
 	// Actual types
-	constant_number  = constant | number,
-	compound_number  = compound | number,
-	native_trigger   = native | trigger,
-	compound_trigger = compound | trigger,
-	native_effect    = native | effect,
-	compound_effect  = compound | effect,
+	constant_number   = constant | number,
+	compound_number   = compound | number,
+	native_function   = native | function,
+	compound_function = compound | function,
 };
 DA_DEFINE_ENUM_OPS(types, constexpr);
 
@@ -78,15 +77,14 @@ inline std::unordered_map<types, std::string_view> types_name = {
 
 	{types::number, "number"},
 	{types::scope, "scope"},
-	{types::trigger, "trigger"},
-	{types::effect, "effect"},
+	{types::statement, "statement"},
+	{types::function, "function"},
+	{types::property, "property"},
 
 	{types::constant_number, "constant_number"},
 	{types::compound_number, "compound_number"},
-	{types::native_trigger, "native_trigger"},
-	{types::compound_trigger, "compound_trigger"},
-	{types::native_effect, "native_effect"},
-	{types::compound_effect, "compound_effect"},
+	{types::native_function, "native_function"},
+	{types::compound_function, "compound_function"},
 };
 
 constexpr bool check_type(types check, types expected) noexcept {
@@ -115,12 +113,21 @@ class object {
 	}
 };
 
-using object_ref      = std::shared_ptr<object>;
-using weak_object_ref = std::weak_ptr<object>;
+using object_ptr = std::shared_ptr<object>;
 
 template<typename T, typename... Args>
-inline object_ref create_object(Args&&... args) {
+inline object_ptr create_object(Args&&... args) {
 	return std::make_shared<T>(std::forward<Args>(args)...);
+}
+
+template<typename T>
+	requires std::is_base_of_v<object, T>
+inline std::shared_ptr<T> object_cast(object_ptr p) noexcept {
+	DA_IFLIKELY(assert_type(p->type(), T::type())) {
+		return static_cast<std::shared_ptr<T>>(p);
+	} else {
+		return {};
+	}
 }
 
 DA_END_SCRIPT
