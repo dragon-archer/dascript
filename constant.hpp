@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2023 dragon-archer
  */
 
-#ifndef _DA_SCRIPT_COMPOUND_HPP_
-#define _DA_SCRIPT_COMPOUND_HPP_
+#ifndef _DA_SCRIPT_CONSTANT_HPP_
+#define _DA_SCRIPT_CONSTANT_HPP_
 
 #include "config.hpp"
 #include "object.hpp"
@@ -18,8 +18,8 @@ DA_BEGIN_SCRIPT
 
 class constant : virtual public object {
 	public:
-	constant() noexcept = default;
-	virtual ~constant() noexcept  = default;
+	constant() noexcept          = default;
+	virtual ~constant() noexcept = default;
 
 	virtual constexpr types type() const noexcept override {
 		return types::constant;
@@ -32,4 +32,4 @@ class constant : virtual public object {
 
 DA_END_SCRIPT
 
-#endif // _DA_SCRIPT_COMPOUND_HPP_
+#endif // _DA_SCRIPT_CONSTANT_HPP_
