@@ -18,15 +18,15 @@ DA_BEGIN_SCRIPT
 
 class scope;
 
-using scope_ref = std::shared_ptr<scope>;
+using scope_ptr = std::shared_ptr<scope>;
 
-inline scope_ref empty_scope = std::make_shared<scope>(empty_scope, empty_scope, empty_scope);
+inline scope_ptr empty_scope = std::make_shared<scope>(empty_scope, empty_scope, empty_scope);
 
 class scope : virtual public object, public std::enable_shared_from_this<scope> {
-	scope_ref _root, _from, _prev;
+	scope_ptr _root, _from, _prev;
 
 	public:
-	scope(const scope_ref& root = empty_scope, const scope_ref& from = empty_scope, const scope_ref& prev = empty_scope) noexcept
+	scope(const scope_ptr& root = empty_scope, const scope_ptr& from = empty_scope, const scope_ptr& prev = empty_scope) noexcept
 		: _root(root)
 		, _from(from)
 		, _prev(prev) { }
@@ -36,19 +36,19 @@ class scope : virtual public object, public std::enable_shared_from_this<scope> 
 		return types::scope;
 	}
 
-	scope_ref root_scope() noexcept {
+	scope_ptr root_scope() noexcept {
 		return _root;
 	}
 
-	scope_ref from_scope() noexcept {
+	scope_ptr from_scope() noexcept {
 		return _from;
 	}
 
-	scope_ref prev_scope() noexcept {
+	scope_ptr prev_scope() noexcept {
 		return _prev;
 	}
 
-	scope_ref this_scope() noexcept {
+	scope_ptr this_scope() noexcept {
 		return shared_from_this();
 	}
 };
