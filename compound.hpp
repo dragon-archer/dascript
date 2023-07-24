@@ -31,11 +31,7 @@ class compound : virtual public object {
 		return types::compound;
 	}
 
-	constexpr auto& get() noexcept {
-		return _value;
-	}
-
-	constexpr auto& get() const noexcept {
+	constexpr auto& get_compound() noexcept {
 		return _value;
 	}
 
