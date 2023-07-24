@@ -24,11 +24,11 @@ find_package(da REQUIRED)
 find_package(spdlog REQUIRED)
 
 file(GLOB SRCS
-	${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp
 )
 
-set(PCH pch.hpp)
+set(PCH src/pch.hpp)
 
 set(LIBS
 	da::da
