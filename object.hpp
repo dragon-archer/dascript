@@ -16,41 +16,14 @@
 
 DA_BEGIN_SCRIPT
 
-/*
-	Example:
-	namespace = da						# field init using string
-	da.1 = {							# field init using compound
-		name = da.1.t					# field init using token
-		trigger = {						# field init using compound_trigger
-			is_ai = no					# scoped trigger
-			gold > 1000					# comparison trigger
-			^ <=> greater_than = { left = gold right = 1000 }
-		}
-		option = {						# field init using compound_effect
-			add_gold = {				# field init using math_value
-				add = 10				# field init using constant
-				if = {					# effect init using compound_effect
-					limit = {			# field
-						gold < 2000		# trigger
-					}
-					add = 20			# effect
-				}
-			}
-		}
-	}
-
-	trigger: bool(size_t scope_id, size_t param_id)
-	effect: void(size_t scope_id, size_t param_id), modify will happen on scope_id
-*/
-
 enum class types {
 	error_type = 0,
 	object     = 1,
 
 	// Modifiers
-	constant = 1 << 1 | object,
-	native   = 1 << 2 | object,
-	compound = 1 << 3 | object,
+	plain    = 1 << 1 | object,
+	compound = 1 << 2 | object,
+	constant = 1 << 3 | object,
 
 	// Abstract types
 	number    = 1 << 4 | object,
@@ -60,9 +33,9 @@ enum class types {
 	property  = 1 << 8 | object,
 
 	// Actual types
-	constant_number   = constant | number,
+	plain_number      = plain | number,
 	compound_number   = compound | number,
-	native_function   = native | function,
+	plain_function    = plain | function,
 	compound_function = compound | function,
 };
 DA_DEFINE_ENUM_OPS(types, constexpr);
@@ -71,9 +44,9 @@ inline std::unordered_map<types, std::string_view> types_name = {
 	{types::error_type, "error_type"},
 	{types::object, "object"},
 
-	{types::constant, "constant"},
-	{types::native, "native"},
+	{types::plain, "plain"},
 	{types::compound, "compound"},
+	{types::constant, "constant"},
 
 	{types::number, "number"},
 	{types::scope, "scope"},
@@ -81,9 +54,9 @@ inline std::unordered_map<types, std::string_view> types_name = {
 	{types::function, "function"},
 	{types::property, "property"},
 
-	{types::constant_number, "constant_number"},
+	{types::plain_number, "plain_number"},
 	{types::compound_number, "compound_number"},
-	{types::native_function, "native_function"},
+	{types::plain_function, "plain_function"},
 	{types::compound_function, "compound_function"},
 };
 
@@ -123,9 +96,11 @@ inline object_ptr create_object(Args&&... args) {
 template<typename T>
 	requires std::is_base_of_v<object, T>
 inline std::shared_ptr<T> object_cast(object_ptr p) noexcept {
-	DA_IFLIKELY(assert_type(p->type(), T::type())) {
-		return static_cast<std::shared_ptr<T>>(p);
-	} else {
+	try {
+		auto np = dynamic_cast<T*>(p.get());
+		return {p, np};
+	} catch(const std::bad_cast&) {
+		log_error("Object cast failed, real type: {}", types_name[p->type()]);
 		return {};
 	}
 }
