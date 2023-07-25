@@ -14,9 +14,6 @@
 TEST_CASE("number") {
 	using namespace DA_SCRIPT;
 
-	log_begin_test();
-	init_plain_functions();
-
 	SUBCASE("add") {
 		auto v = std::make_shared<compound_number>();
 		v->get_compound().emplace_back(std::make_shared<statement>(
@@ -24,6 +21,4 @@ TEST_CASE("number") {
 			std::make_shared<plain_number>(5)));
 		CHECK_EQ(v->get_value(), 5);
 	}
-
-	log_end();
 }

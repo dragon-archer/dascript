@@ -14,7 +14,9 @@
 #include "config.hpp"
 #include "function.hpp"
 #include "global.hpp"
+#include "log.hpp"
 #include "number.hpp"
+#include "scope.hpp"
 
 DA_BEGIN_SCRIPT
 
@@ -24,6 +26,7 @@ inline void create_plain_function(std::string_view name, const plain_function_im
 }
 
 inline void init_plain_functions() {
+	log_info("Start init plain functions");
 	create_plain_function("value", [](scope_ptr, object_ptr p, object_ptr r) {
 		auto rn = object_cast<plain_number>(r);
 		auto pn = object_cast<number>(p);

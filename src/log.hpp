@@ -35,12 +35,23 @@ struct fmt_loc {
 		, location{get_source_loc(loc)} { }
 };
 
+using on_log_handler = std::function<void()>;
+
+inline on_log_handler default_on_log_handler = []() {};
+
+inline on_log_handler _on_log_handlers[spdlog::level::n_levels];
+
+inline on_log_handler set_on_log_handler(spdlog::level::level_enum lvl, const on_log_handler& handler) noexcept {
+	return std::exchange(_on_log_handlers[lvl], handler);
+}
+
 template<typename... Args>
 inline void log(fmt_loc s, spdlog::level::level_enum lvl, Args&&... args) {
 	spdlog::default_logger_raw()->log(s.location,
 									  lvl,
 									  fmt::runtime(s.format),
 									  std::forward<Args>(args)...);
+	_on_log_handlers[lvl]();
 }
 
 template<typename... Args>
@@ -59,7 +70,7 @@ inline void log_info(fmt_loc s, Args&&... args) {
 }
 
 template<typename... Args>
-inline void log_warn(fmt_loc s, Args&&... args) {
+inline void log_warning(fmt_loc s, Args&&... args) {
 	log(s, spdlog::level::warn, std::forward<Args>(args)...);
 }
 
@@ -79,8 +90,11 @@ inline void log_critical(fmt_loc s, Args&&... args) {
 inline void log_begin(spdlog::level::level_enum log_level     = spdlog::level::trace,
 					  std::string_view          file_name     = log_file_name,
 					  bool                      should_rotate = true) {
-	std::vector<spdlog::sink_ptr>   sinks;
+	for(auto& h : _on_log_handlers) {
+		h = default_on_log_handler;
+	}
 
+	std::vector<spdlog::sink_ptr> sinks;
 	sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
 	if(should_rotate) {
 		sinks.push_back(std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
@@ -88,7 +102,6 @@ inline void log_begin(spdlog::level::level_enum log_level     = spdlog::level::t
 	} else {
 		sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(std::string(file_name)));
 	}
-
 	sinks[0]->set_pattern("[%T.%e][%^%l%$][%s:%#]: %v");
 	sinks[1]->set_pattern("[%T.%e][%l][%s:%#]: %v");
 
@@ -102,7 +115,11 @@ inline void log_begin(spdlog::level::level_enum log_level     = spdlog::level::t
 }
 
 inline void log_begin_test() {
-	auto sink   = std::make_shared<spdlog::sinks::stdout_sink_mt>();
+	for(auto& h : _on_log_handlers) {
+		h = default_on_log_handler;
+	}
+
+	auto sink = std::make_shared<spdlog::sinks::stdout_sink_mt>();
 	sink->set_pattern("[%T.%e][%l][%s:%#]: %v");
 
 	auto logger = std::make_shared<spdlog::logger>("", sink);
