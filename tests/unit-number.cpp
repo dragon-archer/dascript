@@ -14,7 +14,7 @@
 TEST_CASE("number") {
 	using namespace DA_SCRIPT;
 
-	log_begin(spdlog::level::warn, "unit-number", false);
+	log_begin_test();
 	init_plain_functions();
 
 	SUBCASE("add") {

@@ -79,7 +79,6 @@ inline void log_critical(fmt_loc s, Args&&... args) {
 inline void log_begin(spdlog::level::level_enum log_level     = spdlog::level::trace,
 					  std::string_view          file_name     = log_file_name,
 					  bool                      should_rotate = true) {
-	std::shared_ptr<spdlog::logger> logger = nullptr;
 	std::vector<spdlog::sink_ptr>   sinks;
 
 	sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
@@ -93,13 +92,26 @@ inline void log_begin(spdlog::level::level_enum log_level     = spdlog::level::t
 	sinks[0]->set_pattern("[%T.%e][%^%l%$][%s:%#]: %v");
 	sinks[1]->set_pattern("[%T.%e][%l][%s:%#]: %v");
 
-	logger = std::make_shared<spdlog::logger>("", begin(sinks), end(sinks));
+	auto logger = std::make_shared<spdlog::logger>("", begin(sinks), end(sinks));
 	logger->flush_on(spdlog::level::err);
 	spdlog::flush_every(std::chrono::seconds(1));
 	spdlog::set_default_logger(logger);
 	logger->set_level(log_level);
 
 	log_info("dascript start");
+}
+
+inline void log_begin_test() {
+	auto sink   = std::make_shared<spdlog::sinks::stdout_sink_mt>();
+	sink->set_pattern("[%T.%e][%l][%s:%#]: %v");
+
+	auto logger = std::make_shared<spdlog::logger>("", sink);
+	logger->flush_on(spdlog::level::err);
+	spdlog::flush_every(std::chrono::seconds(1));
+	spdlog::set_default_logger(logger);
+	logger->set_level(spdlog::level::warn);
+
+	log_info("dascript test start");
 }
 
 inline void log_end() {
