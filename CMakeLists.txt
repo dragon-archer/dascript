@@ -10,6 +10,16 @@
 cmake_minimum_required(VERSION 3.16)
 project(dascript VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+
+# Detect whether it is built as a subproject or a main project
+set(MAIN_PROJECT OFF)
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+	set(MAIN_PROJECT ON)
+endif()
+
+option(dascript_BuildTests "Build unit tests" ${MAIN_PROJECT})
+
 if(USE_CCACHE)
 	find_program(CCACHE_FOUND ccache)
 	if(CCACHE_FOUND)
@@ -20,7 +30,12 @@ endif()
 
 set(TARGET_NAME ${PROJECT_NAME})
 
-find_package(da REQUIRED)
+if(WITH_DA_SUBMODULE)
+	add_subdirectory(${PROJECT_SOURCE_DIR}/da)
+else()
+	find_package(da REQUIRED)
+endif()
+
 find_package(spdlog REQUIRED)
 
 file(GLOB SRCS
@@ -38,3 +53,14 @@ set(LIBS
 add_executable(${TARGET_NAME} ${SRCS})
 target_precompile_headers(${TARGET_NAME} PRIVATE ${PCH})
 target_link_libraries(${TARGET_NAME} PRIVATE ${LIBS})
+
+# Tests
+if(dascript_BuildTests)
+	include(CTest)
+	enable_testing()
+	add_subdirectory(tests)
+endif()
+
+if(dascript_Coverage)
+	include(coverage)
+endif()

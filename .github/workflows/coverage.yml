@@ -1,0 +1,28 @@
+name: Code Coverage
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  code_coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install da
+      run: git clone --depth=1 https://github.com/dragon-archer/da.git
+    - name: Install LCOV
+      run: sudo apt-get update && sudo apt-get install -y lcov libspdlog1
+    - name: Run CMake
+      run: cmake -S . -B build -Ddascript_Coverage=ON -DWITH_DA_SUBMODULE=True
+    - name: Build
+      run: cmake --build build --target code_coverage
+    - name: Publish report to Codacy
+      env:
+        CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+      run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r build/filtered.info

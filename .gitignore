@@ -6,3 +6,4 @@ temp/
 CMakeSettings.json
 *.user
 *.user.*
+*.sh

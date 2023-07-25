@@ -73,13 +73,22 @@ inline void log_critical(fmt_loc s, Args&&... args) {
 	log(s, spdlog::level::critical, std::forward<Args>(args)...);
 }
 
-inline int _run_before_main_log = []() {
+#define daassert(expr) \
+	(void)(!!(expr) || (log_error("Assert \"{}\" failed!", #expr), true))
+
+inline void log_begin(spdlog::level::level_enum log_level     = spdlog::level::trace,
+					  std::string_view          file_name     = log_file_name,
+					  bool                      should_rotate = true) {
 	std::shared_ptr<spdlog::logger> logger = nullptr;
 	std::vector<spdlog::sink_ptr>   sinks;
 
 	sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-	sinks.push_back(std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-		std::string(log_file_name), max_log_file_size, max_log_file_count, true));
+	if(should_rotate) {
+		sinks.push_back(std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+			std::string(file_name), max_log_file_size, max_log_file_count, true));
+	} else {
+		sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(std::string(file_name)));
+	}
 
 	sinks[0]->set_pattern("[%T.%e][%^%l%$][%s:%#]: %v");
 	sinks[1]->set_pattern("[%T.%e][%l][%s:%#]: %v");
@@ -88,13 +97,15 @@ inline int _run_before_main_log = []() {
 	logger->flush_on(spdlog::level::err);
 	spdlog::flush_every(std::chrono::seconds(1));
 	spdlog::set_default_logger(logger);
-	logger->set_level(spdlog::level::trace);
+	logger->set_level(log_level);
 
-	return 0;
-}();
+	log_info("dascript start");
+}
 
-#define daassert(expr) \
-	(void)(!!(expr) || (log_error("Assert \"{}\" failed!", #expr), true))
+inline void log_end() {
+	log_info("dascript exit");
+	spdlog::shutdown();
+}
 
 DA_END_SCRIPT
 

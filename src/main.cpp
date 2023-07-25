@@ -14,8 +14,8 @@
 using namespace DA_SCRIPT;
 
 int main() {
-	log_info("dascript start");
+	log_begin();
 	init_plain_functions();
-	log_info("dascript exit");
+	log_end();
 	return 0;
 }
