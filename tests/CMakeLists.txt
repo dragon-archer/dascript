@@ -14,7 +14,8 @@ target_compile_definitions(test_main PUBLIC
 	DOCTEST_CONFIG_USE_STD_HEADERS
 )
 target_link_libraries(test_main PUBLIC ${LIBS})
-target_include_directories(test_main PUBLIC thirdparty)
+target_compile_features(test_main PUBLIC cxx_std_20)
+target_include_directories(test_main SYSTEM PUBLIC thirdparty)
 target_include_directories(test_main PUBLIC ../src)
 
 file(GLOB UNIT_SRC unit-*.cpp)
