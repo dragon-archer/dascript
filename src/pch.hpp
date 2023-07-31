@@ -11,6 +11,11 @@
 #ifndef _DA_SCRIPT_PCH_HPP_
 #define _DA_SCRIPT_PCH_HPP_
 
+#ifdef DASCRIPT_USE_STD_FORMAT
+	#define SPDLOG_USE_STD_FORMAT
+	#define DA_USE_STD_FORMAT
+#endif
+
 #include <da/config.hpp>
 #include <da/preprocessor/enum.hpp>
 #include <da/utility/hash.hpp>

@@ -8,8 +8,9 @@
 #
 
 add_custom_target(code_coverage
-	COMMAND ${CMAKE_COMMAND} -S${PROJECT_SOURCE_DIR} -B${PROJECT_BINARY_DIR}/code_coverage $<$<BOOL:WITH_DA_SUBMODULE>:-DWITH_DA_SUBMODULE=True>
-		-DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="--coverage;-fprofile-arcs;-ftest-coverage" -Ddascript_BuildTests=ON -DCMAKE_CXX_COMPILER=g++
+	COMMAND ${CMAKE_COMMAND} -S${PROJECT_SOURCE_DIR} -B${PROJECT_BINARY_DIR}/code_coverage
+		-DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS="--coverage;-fprofile-arcs;-ftest-coverage"
+		-Ddascript_BuildTests=ON  -Ddascript_UseBundledDa=${dascript_UseBundledDa}
 	COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR}/code_coverage
 	COMMAND lcov -d . -z
 	COMMAND cd ${PROJECT_BINARY_DIR}/code_coverage && ${CMAKE_CTEST_COMMAND} --output-on-failure
