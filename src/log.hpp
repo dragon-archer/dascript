@@ -47,7 +47,7 @@ inline on_log_handler set_on_log_handler(spdlog::level::level_enum lvl, const on
 }
 
 template<typename... Args>
-inline void log(fmt_loc<Args...> s, spdlog::level::level_enum lvl, Args&&... args) {
+inline void log(const fmt_loc<Args...>& s, spdlog::level::level_enum lvl, Args&&... args) {
 	spdlog::default_logger_raw()->log(s.location,
 									  lvl,
 									  s.format,
@@ -56,37 +56,37 @@ inline void log(fmt_loc<Args...> s, spdlog::level::level_enum lvl, Args&&... arg
 }
 
 template<typename... Args>
-inline void log_trace(fmt_loc<Args...> s, Args&&... args) {
+inline void log_trace(const fmt_loc<Args...>& s, Args&&... args) {
 	log(s, spdlog::level::trace, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_debug(fmt_loc<Args...> s, Args&&... args) {
+inline void log_debug(const fmt_loc<Args...>& s, Args&&... args) {
 	log(s, spdlog::level::debug, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_info(fmt_loc<Args...> s, Args&&... args) {
+inline void log_info(const fmt_loc<Args...>& s, Args&&... args) {
 	log(s, spdlog::level::info, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_warning(fmt_loc<Args...> s, Args&&... args) {
+inline void log_warning(const fmt_loc<Args...>& s, Args&&... args) {
 	log(s, spdlog::level::warn, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_error(fmt_loc<Args...> s, Args&&... args) {
+inline void log_error(const fmt_loc<Args...>& s, Args&&... args) {
 	log(s, spdlog::level::err, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_critical(fmt_loc<Args...> s, Args&&... args) {
+inline void log_critical(const fmt_loc<Args...>& s, Args&&... args) {
 	log(s, spdlog::level::critical, std::forward<Args>(args)...);
 }
 
 #define daassert(expr) \
-	(void)(!!(expr) || (log_error("Assert \"{}\" failed!", #expr), true))
+	(void)(!!(expr) || (log_error({"Assert \"{}\" failed!"}, #expr), true))
 
 inline void log_begin(spdlog::level::level_enum log_level     = spdlog::level::trace,
 					  std::string_view          file_name     = log_file_name,
