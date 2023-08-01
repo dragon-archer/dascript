@@ -1,9 +1,6 @@
 name: Code Coverage
 
-on:
-  push:
-  pull_request:
-  workflow_dispatch:
+on: [push, pull_request, workflow_dispatch]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -19,7 +16,7 @@ jobs:
     - name: Install lcov & spdlog
       run: sudo apt-get update && sudo apt-get install -y lcov libspdlog-dev
     - name: Run CMake
-      run: cmake -S . -B build -Ddascript_Coverage=ON -DWITH_DA_SUBMODULE=True
+      run: cmake -S . -B build -Ddascript_Coverage=ON -Ddascript_WithBundledDa=ON
     - name: Build
       run: cmake --build build --target code_coverage
     - name: Publish report to Codacy
