@@ -18,8 +18,11 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 	set(MAIN_PROJECT ON)
 endif()
 
+list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_std_23 dascript_HasCxx23)
+
 option(dascript_BuildTests   "Build unit tests"                  ${MAIN_PROJECT})
 option(dascript_UseBundledDa "Use bundled da"                    OFF)
+option(dascript_UseCxx23     "Enable C++23"                      ${dascript_HasCxx23})
 option(dascript_UseStdFormat "Use std::format instead of fmtlib" OFF)
 
 set(TARGET_NAME ${PROJECT_NAME})
@@ -45,9 +48,23 @@ set(LIBS
 )
 
 add_executable(${TARGET_NAME} ${SRCS})
-target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 target_precompile_headers(${TARGET_NAME} PRIVATE ${PCH})
 target_link_libraries(${TARGET_NAME} PRIVATE ${LIBS})
+
+if(dascript_UseCxx23)
+	if(NOT dascript_HasCxx23)
+		message(FATAL_ERROR "dascript is configured to use C++23 but the compiler does not support C++23")
+	else()
+		target_compile_features(${TARGET_NAME} INTERFACE cxx_std_23)
+	endif()
+else()
+	list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_std_20 dascript_HasCxx20)
+	if(NOT dascript_HasCxx20)
+		message(FATAL_ERROR "dascript should be compiled under at least C++20")
+	endif()
+	target_compile_features(${TARGET_NAME} INTERFACE cxx_std_20)
+endif()
+
 if(dascript_UseStdFormat)
 	target_compile_definitions(${TARGET_NAME} PRIVATE DASCRIPT_USE_STD_FORMAT)
 endif()
