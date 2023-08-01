@@ -41,7 +41,7 @@ inline auto create_global_object_with_id(size_t id, Args&&... args) {
 	auto ptr          = std::make_shared<T>(std::forward<Args>(args)...);
 	auto [_, success] = get_global_object_store().try_emplace(id, ptr);
 	DA_IFUNLIKELY(!success) {
-		log_error("Failed create global object, id: {}", id);
+		log_error({"Failed create global object, id: {}"}, id);
 	}
 	return std::pair{ptr, id};
 }

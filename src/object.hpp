@@ -66,7 +66,7 @@ constexpr bool check_type(types check, types expected) noexcept {
 
 #define assert_type(check, expected) \
 	(check_type((check), (expected)) \
-	 || (log_error("Type error! Expected {}, got {}", types_name[(expected)], types_name[(check)]), false))
+	 || (log_error({"Type error! Expected {}, got {}"}, types_name[(expected)], types_name[(check)]), false))
 
 class object {
 	public:
@@ -100,7 +100,7 @@ inline std::shared_ptr<T> object_cast(object_ptr p) noexcept {
 		auto np = dynamic_cast<T*>(p.get());
 		return {p, np};
 	} catch(const std::bad_cast&) {
-		log_error("Object cast failed, real type: {}", types_name[p->type()]);
+		log_error({"Object cast failed, real type: {}"}, types_name[p->type()]);
 		return {};
 	}
 }

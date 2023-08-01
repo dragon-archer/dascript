@@ -25,12 +25,13 @@ static constexpr std::string_view log_file_name      = "script.log";
 							  loc.function_name()};
 }
 
+template<typename... Args>
 struct fmt_loc {
-	std::string_view   format;
-	spdlog::source_loc location;
+	fmt::format_string<Args...> format;
+	spdlog::source_loc          location;
 
 	template<typename String>
-	constexpr fmt_loc(const String& s, const std::source_location& loc = std::source_location::current()) noexcept
+	consteval fmt_loc(const String& s, const std::source_location& loc = std::source_location::current()) noexcept
 		: format{s}
 		, location{get_source_loc(loc)} { }
 };
@@ -46,41 +47,41 @@ inline on_log_handler set_on_log_handler(spdlog::level::level_enum lvl, const on
 }
 
 template<typename... Args>
-inline void log(fmt_loc s, spdlog::level::level_enum lvl, Args&&... args) {
+inline void log(fmt_loc<Args...> s, spdlog::level::level_enum lvl, Args&&... args) {
 	spdlog::default_logger_raw()->log(s.location,
 									  lvl,
-									  fmt::runtime(s.format),
+									  s.format,
 									  std::forward<Args>(args)...);
 	_on_log_handlers[lvl]();
 }
 
 template<typename... Args>
-inline void log_trace(fmt_loc s, Args&&... args) {
+inline void log_trace(fmt_loc<Args...> s, Args&&... args) {
 	log(s, spdlog::level::trace, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_debug(fmt_loc s, Args&&... args) {
+inline void log_debug(fmt_loc<Args...> s, Args&&... args) {
 	log(s, spdlog::level::debug, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_info(fmt_loc s, Args&&... args) {
+inline void log_info(fmt_loc<Args...> s, Args&&... args) {
 	log(s, spdlog::level::info, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_warning(fmt_loc s, Args&&... args) {
+inline void log_warning(fmt_loc<Args...> s, Args&&... args) {
 	log(s, spdlog::level::warn, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_error(fmt_loc s, Args&&... args) {
+inline void log_error(fmt_loc<Args...> s, Args&&... args) {
 	log(s, spdlog::level::err, std::forward<Args>(args)...);
 }
 
 template<typename... Args>
-inline void log_critical(fmt_loc s, Args&&... args) {
+inline void log_critical(fmt_loc<Args...> s, Args&&... args) {
 	log(s, spdlog::level::critical, std::forward<Args>(args)...);
 }
 
@@ -111,7 +112,7 @@ inline void log_begin(spdlog::level::level_enum log_level     = spdlog::level::t
 	spdlog::set_default_logger(logger);
 	logger->set_level(log_level);
 
-	log_info("dascript start");
+	log_info({"dascript start"});
 }
 
 inline void log_begin_test() {
@@ -128,11 +129,11 @@ inline void log_begin_test() {
 	spdlog::set_default_logger(logger);
 	logger->set_level(spdlog::level::warn);
 
-	log_info("dascript test start");
+	log_info({"dascript test start"});
 }
 
 inline void log_end() {
-	log_info("dascript exit");
+	log_info({"dascript exit"});
 	spdlog::shutdown();
 }
 
