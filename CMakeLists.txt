@@ -54,8 +54,6 @@ endif()
 
 # Tests
 if(dascript_BuildTests)
-	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1) # Forbid CTest to add targets
-	include(CTest)
 	enable_testing()
 	add_subdirectory(tests)
 endif()
