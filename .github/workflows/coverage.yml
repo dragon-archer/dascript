@@ -16,7 +16,7 @@ jobs:
     - name: Install lcov & spdlog
       run: sudo apt-get update && sudo apt-get install -y lcov libspdlog-dev
     - name: Run CMake
-      run: cmake -S . -B build -Ddascript_Coverage=ON -Ddascript_WithBundledDa=ON
+      run: cmake -S . -B build -Ddascript_Coverage=ON -Ddascript_UseBundledDa=ON
     - name: Build
       run: cmake --build build --target code_coverage
     - name: Publish report to Codacy
