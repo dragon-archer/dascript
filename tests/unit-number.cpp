@@ -61,6 +61,6 @@ TEST_CASE("number") {
 		v->get_compound().emplace_back(std::make_shared<statement>(
 			get_global_object(da::hash("divide")),
 			std::make_shared<plain_number>(3)));
-		CHECK_EQ(v->get_value(), -2);
+		CHECK_EQ(v->get_value(), doctest::Approx{-8.0 / 3});
 	}
 }

@@ -19,6 +19,7 @@
 #include <da/config.hpp>
 #include <da/preprocessor/enum.hpp>
 #include <da/utility/hash.hpp>
+#include <da/utility/number.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>

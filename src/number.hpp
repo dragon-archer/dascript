@@ -18,7 +18,7 @@
 
 DA_BEGIN_SCRIPT
 
-using number_impl = int64_t; // TODO: Use fixed_point instead
+using number_impl = fixed_point<5>;
 
 class number : virtual public object {
 	public:
