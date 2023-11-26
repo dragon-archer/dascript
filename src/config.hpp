@@ -21,4 +21,8 @@
 	DA_END_NAMESPACE
 #define DA_SCRIPT ::da::script
 
+DA_BEGIN_SCRIPT
+using namespace std::literals;
+DA_END_SCRIPT
+
 #endif // _DA_SCRIPT_CONFIG_HPP_
