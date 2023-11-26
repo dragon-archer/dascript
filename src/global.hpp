@@ -17,6 +17,11 @@
 
 DA_BEGIN_SCRIPT
 
+inline size_t random_id() noexcept {
+	static std::mt19937_64 engine(std::time(nullptr));
+	return engine();
+}
+
 inline auto& get_global_object_store() noexcept {
 	static std::unordered_map<size_t, object_ptr> instance;
 	return instance;
@@ -29,11 +34,6 @@ inline object_ptr get_global_object(size_t id) {
 	} else {
 		return it->second;
 	}
-}
-
-inline size_t random_id() noexcept {
-	static std::mt19937_64 engine(std::time(nullptr));
-	return engine();
 }
 
 template<typename T, typename... Args>
@@ -49,6 +49,16 @@ inline auto create_global_object_with_id(size_t id, Args&&... args) {
 template<typename T, typename... Args>
 inline auto create_global_object(Args&&... args) {
 	return create_global_object_with_id(random_id(), std::forward<Args>(args)...);
+}
+
+inline auto& get_global_string_store() noexcept {
+	static std::unordered_set<std::string> instance;
+	return instance;
+}
+
+inline std::string_view create_global_string(std::string&& s) {
+	auto [iter, _] = get_global_string_store().insert(std::move(s));
+	return *iter;
 }
 
 DA_END_SCRIPT

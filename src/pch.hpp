@@ -32,6 +32,8 @@
 #include <source_location>
 #include <string_view>
 #include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #endif // _DA_SCRIPT_PCH_HPP_
