@@ -12,13 +12,11 @@
 #define _DA_SCRIPT_LEXER_HPP_
 
 #include "config.hpp"
+#include "global.hpp"
 #include "log.hpp"
 #include "number.hpp"
-#include "global.hpp"
 
 DA_BEGIN_SCRIPT
-
-using lexer_impl = std::string_view;
 
 enum class lexer_type {
 	error,
@@ -27,20 +25,23 @@ enum class lexer_type {
 	string,
 	opcode,
 };
-DA_DEFINE_ENUM_OPS(lexer_type, constexpr);
 
 class lexer {
-	using iter_t = lexer_impl::iterator;
-	using char_t = std::remove_cvref_t<decltype(*std::declval<iter_t>())>;
+	public:
+	using string_t = std::string_view;
+	using iter_t   = string_t::iterator;
+	using char_t   = std::remove_cvref_t<decltype(*std::declval<iter_t>())>;
 
+	private:
 	iter_t     _cur, _end;
 	int        _line{1};
 	lexer_type _type{lexer_type::error};
+	string_t   _filename;
 	union {
-		lexer_impl  _error;
-		lexer_impl  _identifier;
+		string_t    _error;
+		string_t    _identifier;
 		number_impl _number;
-		lexer_impl  _string;
+		string_t    _string;
 		char_t      _opcode;
 	};
 
@@ -52,15 +53,17 @@ class lexer {
 	};
 
 	public:
-	constexpr lexer(lexer_impl s) noexcept
+	constexpr lexer(string_t s, string_t filename = ""sv) noexcept
 		: _cur(s.begin())
-		, _end(s.end()) { }
+		, _end(s.end())
+		, _filename(filename) { }
 
-	constexpr lexer(iter_t begin, iter_t end) noexcept
+	constexpr lexer(iter_t begin, iter_t end, string_t filename = ""sv) noexcept
 		: _cur(begin)
-		, _end(end) { }
+		, _end(end)
+		, _filename(filename) { }
 
-	constexpr lexer_type next() noexcept {
+	constexpr lexer_type next() {
 		skip_white();
 		switch(peek_type()) {
 			case type::digit:
@@ -77,9 +80,10 @@ class lexer {
 	}
 
 	private:
-	constexpr void emit_error(std::string_view reason) noexcept {
+	constexpr void emit_error(string_t reason) {
 		_error = reason;
 		_type  = lexer_type::error;
+		log_error({"Lexer error:\n\tError: {}\n\tLocation: file: {}, line: {}"}, reason, _filename, _line);
 	}
 
 	constexpr type peek_type() const noexcept {
@@ -123,7 +127,7 @@ class lexer {
 		return *_cur;
 	}
 
-	constexpr bool next_number() noexcept {
+	constexpr bool next_number() {
 		auto        ch = *_cur;
 		number_impl f = 1, v = 0, mul = 0.1;
 		bool        has_dot = false;
@@ -157,10 +161,10 @@ class lexer {
 		return true;
 	}
 
-	constexpr bool next_alphabet() noexcept {
+	constexpr bool next_alphabet() {
 		auto ch = *_cur;
 		if(ch == '"') { // is_quoted
-			bool is_escaped = false;
+			bool        is_escaped = false;
 			std::string s;
 			while((ch = next_char()) && is_valid()) {
 				if(is_escaped) {
@@ -197,7 +201,7 @@ class lexer {
 			while(it != _end && !std::isblank(*it)) {
 				++it;
 			}
-			_type = lexer_type::identifier;
+			_type       = lexer_type::identifier;
 			_identifier = create_global_string(std::string(_cur, it));
 			_cur        = it;
 			return true;
@@ -211,7 +215,7 @@ class lexer {
 		return true;
 	}
 
-	static constexpr bool in_list(char_t ch, lexer_impl s) noexcept {
+	static constexpr bool in_list(char_t ch, string_t s) noexcept {
 		return s.find(ch) != s.npos;
 	}
 
