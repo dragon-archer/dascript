@@ -4,7 +4,7 @@
 # @version   0.1
 # @author    dragon-archer
 #
-# @copyright Copyright (c) 2023 dragon-archer
+# @copyright Copyright (c) 2023-2025 dragon-archer
 #
 
 add_custom_target(code_coverage
@@ -14,7 +14,7 @@ add_custom_target(code_coverage
 	COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR}/code_coverage
 	COMMAND lcov -d . -z
 	COMMAND cd ${PROJECT_BINARY_DIR}/code_coverage && ${CMAKE_CTEST_COMMAND} --output-on-failure
-	COMMAND lcov -d . -c -o cover.info --rc lcov_branch_coverage=1
-	COMMAND lcov -e cover.info "*src/*" -o filtered.info --rc lcov_branch_coverage=1
+	COMMAND lcov -d . -c -o cover.info --rc lcov_branch_coverage=1 --rc no_exception_branch=1
+	COMMAND lcov -e cover.info "*src/*" -o filtered.info --rc lcov_branch_coverage=1 --rc no_exception_branch=1
 	COMMENT "Compile and test with code coverage"
 )

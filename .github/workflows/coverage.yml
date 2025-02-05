@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install da
       run: git clone --depth=1 https://github.com/dragon-archer/da.git
-    - name: Install lcov & spdlog & nlohmann-json & flex & bison
+    - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y lcov libspdlog-dev nlohmann-json3-dev flex bison
     - name: Run CMake
       run: cmake -S . -B build -Ddascript_Coverage=ON -Ddascript_UseBundledDa=ON
