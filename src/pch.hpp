@@ -5,7 +5,7 @@
  * @version   0.1
  * @author    dragon-archer
  *
- * @copyright Copyright (c) 2023 dragon-archer
+ * @copyright Copyright (c) 2023-2025 dragon-archer
  */
 
 #ifndef _DA_SCRIPT_PCH_HPP_
@@ -20,6 +20,7 @@
 #include <da/preprocessor/enum.hpp>
 #include <da/utility/hash.hpp>
 #include <da/utility/number.hpp>
+#include <nlohmann/json.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -27,9 +28,12 @@
 #include <spdlog/spdlog.h>
 #include <algorithm>
 #include <cstring>
+#include <iostream>
 #include <memory>
 #include <random>
 #include <source_location>
+#include <sstream>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <unordered_map>

@@ -4,7 +4,7 @@
 # @version   0.1
 # @author    dragon-archer
 #
-# @copyright Copyright (c) 2023 dragon-archer
+# @copyright Copyright (c) 2023-2025 dragon-archer
 #
 
 cmake_minimum_required(VERSION 3.16)
@@ -34,22 +34,37 @@ else()
 endif()
 
 find_package(spdlog REQUIRED)
+find_package(FLEX REQUIRED)
+find_package(BISON REQUIRED)
+find_package(nlohmann_json REQUIRED)
+
+flex_target(lexer ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.ll ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
+bison_target(parser ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.yy ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/parser.hpp)
+add_flex_bison_dependency(lexer parser)
 
 file(GLOB SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp
 )
 
+set(SRCS ${SRCS} ${FLEX_lexer_OUTPUTS} ${BISON_parser_OUTPUTS})
+
 set(PCH src/pch.hpp)
 
 set(LIBS
 	da::da
 	spdlog::spdlog
+	nlohmann_json::nlohmann_json
 )
 
 add_executable(${TARGET_NAME} ${SRCS})
+target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty) # Use bundled FlexLexer.h
+target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_precompile_headers(${TARGET_NAME} PRIVATE ${PCH})
 target_link_libraries(${TARGET_NAME} PRIVATE ${LIBS})
+# Fix __cplusplus for MSVC
+target_compile_options(${TARGET_NAME} PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>")
 
 if(dascript_UseCxx23)
 	if(NOT dascript_HasCxx23)

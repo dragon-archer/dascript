@@ -1,0 +1,6 @@
+#define DA_BEGIN_NAMESPACE namespace da {
+#define DA_END_NAMESPACE }
+#define DA_BEGIN_SCRIPT DA_BEGIN_NAMESPACE namespace script {
+#define DA_END_SCRIPT } DA_END_NAMESPACE
+#define DA_BEGIN_SCANNER DA_BEGIN_SCRIPT namespace scanner {
+#define DA_END_SCANNER } DA_END_SCRIPT
